@@ -161,20 +161,19 @@ const Home: React.FC<HomeProps> = ({ data, error }) => {
             </div>
             <div className="text-center p-5">
                 <div key={currentRound}>
-                    <div className="flex-row">
+                    <div className="grid grid-cols-3 gap-4">
                         <div>
                             {currentRound > 0 && (
                                 <button onClick={goToPrevRound}>{"<"}</button>
                             )}
                         </div>
+                        <div className="text-slate-700 font-bold mb-2">
+                            {round[0][0]}
+                        </div>
                         <div>
                             {currentRound < rounds.length - 1 && (
                                 <button onClick={goToNextRound}>{">"}</button>
                             )}
-                        </div>
-
-                        <div className="text-slate-700 font-bold mb-2">
-                            {round[0][0]}
                         </div>
                     </div>
 

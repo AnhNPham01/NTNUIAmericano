@@ -10,7 +10,7 @@ import React from "react";
  */
 const Container = (props: any) => {
     return (
-        <div className="flex justify-center bg-white">
+        <div className="flex justify-center h-screen bg-white">
             <div className="w-full font-sans m-5">{props.children}</div>
         </div>
     );
