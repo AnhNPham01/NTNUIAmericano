@@ -2,6 +2,7 @@
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import Container from "@/components/Container";
 import Link from "next/link";
+import { useState } from "react";
 
 interface Item {
     medlemsid: number;
@@ -109,6 +110,8 @@ function formatMatchups(matchups: Matchup): string[][][] {
     return rounds;
 }
 
+const buttons = Array.from({ length: 17 }, (_, i) => i); // Create an array from 0 to 16
+
 export const getServerSideProps: GetServerSideProps<
     HomeProps
 > = async (): Promise<GetServerSidePropsResult<HomeProps>> => {
@@ -124,6 +127,15 @@ export const getServerSideProps: GetServerSideProps<
 };
 
 const Home: React.FC<HomeProps> = ({ data, error }) => {
+    const [currentRound, setCurrentRound] = useState(0); // State for current round
+
+    const goToNextRound = () => {
+        setCurrentRound((prevRound) => prevRound + 1);
+    };
+    const goToPrevRound = () => {
+        setCurrentRound((prevRound) => prevRound - 1);
+    };
+
     if (error) {
         return <div>Error: {error}</div>;
     }
@@ -133,71 +145,68 @@ const Home: React.FC<HomeProps> = ({ data, error }) => {
     }
 
     const rounds = formatMatchups(generateRounds(data));
+    const round = rounds[currentRound]; // Get current round
+
     return (
         <Container>
-            <div className="h-screen">
-                <p className="m-5 flex justify-center text-4xl">Americano</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>MedlemsID</th>
-                            <th>Fornavn</th>
-                            <th>Etternavn</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {data.map((item) => (
-                            <tr
-                                key={`${item.medlemsid}-${item.fornavn}-${item.etternavn}`}
-                            >
-                                <td>{item.medlemsid}</td>
-                                <td>{item.fornavn}</td>
-                                <td>{item.etternavn}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <p className="flex justify-center text-4xl">Americano</p>
 
-                <div className="mt-5">
-                    <p className="font-bold">Spillere</p>
-                    {data.map((item) => (
-                        <div key={`${item.fornavn}-${item.etternavn}`}>
-                            {item.fornavn} {item.etternavn[0]}.
+            <div className="mt-5 flex justify-center">
+                <p className="font-bold">Spillere: </p>
+                {data.map((item) => (
+                    <div key={`${item.fornavn}-${item.etternavn}`}>
+                        {item.fornavn} {item.etternavn[0]}.
+                    </div>
+                ))}
+            </div>
+            <div className="text-center p-5">
+                <div key={currentRound}>
+                    <div className="flex-row">
+                        <div>
+                            {currentRound > 0 && (
+                                <button onClick={goToPrevRound}>{"<"}</button>
+                            )}
                         </div>
-                    ))}
-                </div>
-                <div className="text-center p-5">
-                    {rounds.map((round, index) => (
-                        <div key={index}>
-                            <div className="text-slate-700 font-bold mb-2">
-                                {round[0][0]}
+                        <div>
+                            {currentRound < rounds.length - 1 && (
+                                <button onClick={goToNextRound}>{">"}</button>
+                            )}
+                        </div>
+
+                        <div className="text-slate-700 font-bold mb-2">
+                            {round[0][0]}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-center">
+                        <div className="bg-gray-100 rounded-md mb-4 max-w-md md:max-w-lg flex items-center justify-between p-5 w-4/5">
+                            <div className="flex-col">
+                                {round.slice(1).map((match, matchIndex) => (
+                                    <div key={matchIndex}>{match[0]}</div>
+                                ))}
                             </div>
-                            <div className="bg-gray-100 rounded-md mb-4 max-w-md md:max-w-lg">
-                                <div className="flex items-center justify-between p-5">
-                                    <div className="flex flex-col">
-                                        {round
-                                            .slice(1)
-                                            .map((match, matchIndex) => (
-                                                <div key={matchIndex}>
-                                                    {match[0]}
-                                                </div>
-                                            ))}
-                                    </div>
-                                    {round.length > 1 && <div>vs</div>}
-                                    <div className="flex flex-col">
-                                        {round
-                                            .slice(1)
-                                            .map((match, matchIndex) => (
-                                                <div key={matchIndex}>
-                                                    {match[1]}
-                                                </div>
-                                            ))}
-                                    </div>
-                                </div>
+                            {round.length > 1 && <div>vs</div>}
+                            <div className="flex flex-col">
+                                {round.slice(1).map((match, matchIndex) => (
+                                    <div key={matchIndex}>{match[1]}</div>
+                                ))}
                             </div>
                         </div>
-                    ))}
+                    </div>
                 </div>
+                {currentRound < rounds.length - 1 && (
+                    <button onClick={goToNextRound}>Next</button>
+                )}
+            </div>
+            <div className="flex flex-wrap justify-center">
+                {buttons.map((button) => (
+                    <button
+                        key={button}
+                        className="rounded-md w-12 border m-2 px-4 py-2 bg-gray-100"
+                    >
+                        {button}
+                    </button>
+                ))}
             </div>
         </Container>
     );
