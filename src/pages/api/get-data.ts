@@ -19,9 +19,9 @@ function shuffleArray(array: any[]): any[] {
   return array;
 }
 
+
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    // Get the number from the request query
     const number = req.query.number;
 
     if (!number) {
@@ -29,17 +29,21 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    // Use the number in your database query or elsewhere in your code
-    connection.query('SELECT b.medlemsid, b.fornavn, b.etternavn, b.mobil FROM vikarer a, medlemmer b WHERE a.medlemsid = b.medlemsid AND a.timeid= ? ORDER BY a.bekreftelsestidspunkt', [number], (error, results, fields) => {
-      if (error) {
-        res.status(500).json({ error: 'Error fetching data from the database' });
-        return;
-      }
-      let dummy = [{"medlemsid":10669,"fornavn":"Lars","etternavn":"Føleide","mobil":"+47 98454499"},{"medlemsid":12197,"fornavn":"Anh","etternavn":"Nguyen Pham","mobil":"97904835"}, {"medlemsid":12345,"fornavn":"Bob","etternavn":"Dahl","mobil":"99745767"}, {"medlemsid":15678,"fornavn":"Alice","etternavn":"Dahl","mobil":"76894556"}];
-      results = shuffleArray(dummy);
-
-      res.status(200).json(results);
+    // Wrap connection.query within a new Promise
+    const results = await new Promise((resolve, reject) => {
+      connection.query('SELECT b.medlemsid, b.fornavn, b.etternavn, b.mobil FROM vikarer a, medlemmer b WHERE a.medlemsid = b.medlemsid AND a.timeid= ? ORDER BY a.bekreftelsestidspunkt', [number], (error, results, fields) => {
+        if (error) {
+          reject(error);
+        } else {
+          let dummy = [{"medlemsid":10669,"fornavn":"Lars","etternavn":"Føleide","mobil":"+47 98454499"},{"medlemsid":12197,"fornavn":"Anh","etternavn":"Nguyen Pham","mobil":"97904835"}, {"medlemsid":12345,"fornavn":"Bob","etternavn":"Dahl","mobil":"99745767"}, {"medlemsid":15678,"fornavn":"Alice","etternavn":"Dahl","mobil":"76894556"}];
+          results = shuffleArray(dummy);
+          resolve(results);
+        }
+      });
     });
+
+    // Send response after connection.query completes
+    res.status(200).json(results);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching data from the database' });
   }
