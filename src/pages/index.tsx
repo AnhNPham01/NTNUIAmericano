@@ -193,9 +193,6 @@ const Home: React.FC<HomeProps> = ({ data, error }) => {
                         </div>
                     </div>
                 </div>
-                {currentRound < rounds.length - 1 && (
-                    <button onClick={goToNextRound}>Next</button>
-                )}
             </div>
             <div className="flex flex-wrap justify-center">
                 {buttons.map((button) => (
