@@ -115,7 +115,7 @@ const buttons = Array.from({ length: 17 }, (_, i) => i); // Create an array from
 export const getServerSideProps: GetServerSideProps<
     HomeProps
 > = async (): Promise<GetServerSidePropsResult<HomeProps>> => {
-    const numberToSend = 40; // Replace with the desired number
+    const numberToSend = 76; // Replace with the desired number
     const { data, error } = await sendData(numberToSend);
 
     return {
@@ -128,12 +128,17 @@ export const getServerSideProps: GetServerSideProps<
 
 const Home: React.FC<HomeProps> = ({ data, error }) => {
     const [currentRound, setCurrentRound] = useState(0); // State for current round
+    const [scores, setScores] = useState<[number, number]>([0, 0]); // State for the scores
 
     const goToNextRound = () => {
         setCurrentRound((prevRound) => prevRound + 1);
     };
     const goToPrevRound = () => {
         setCurrentRound((prevRound) => prevRound - 1);
+    };
+
+    const updateScores = (score: number) => {
+        setScores([score, 16 - score]); // Update the scores state
     };
 
     if (error) {
@@ -195,14 +200,20 @@ const Home: React.FC<HomeProps> = ({ data, error }) => {
                 </div>
             </div>
             <div className="flex flex-wrap justify-center">
-                {buttons.map((button) => (
-                    <button
-                        key={button}
-                        className="rounded-md w-12 border m-2 px-4 py-2 bg-gray-100"
-                    >
-                        {button}
-                    </button>
-                ))}
+            {buttons.map((button) => (
+                <button
+                    key={button}
+                    className="rounded-md w-12 border m-2 px-4 py-2 bg-gray-100"
+                    onClick={() => updateScores(button)} // Add an onClick handler here
+                >
+                    {button}
+                </button>
+            ))}
+            </div>
+
+            <div className="mt-4">
+            <p>Score 1: {scores[0]}</p> {/* Display the scores here */}
+            <p>Score 2: {scores[1]}</p>
             </div>
         </Container>
     );
