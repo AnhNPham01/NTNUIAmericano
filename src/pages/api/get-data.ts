@@ -5,7 +5,7 @@ import mysql from "mysql";
 const connection = mysql.createConnection({
   host: "ntnuitennis.no",
   user: "anh",
-  password: "elektro52",
+  password: process.env.DATABASE_PASSWORD || "", // power + number
   database: "tennisgr_web2",
 });
 
@@ -28,16 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       return;
     }
 
-    const results = await new Promise<any[]>((resolve, reject) => {
-      connection.query('SELECT b.medlemsid, b.fornavn, b.etternavn, b.mobil FROM vikarer a, medlemmer b WHERE a.medlemsid = b.medlemsid AND a.timeid= ? ORDER BY a.bekreftelsestidspunkt', [number], (error, results, fields) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results);
-        }
-      });
-    });
-  
     let dummy = [
       {"medlemsid":10669,"fornavn":"Lars","etternavn":"Føleide","mobil":"+47 98454499"},
       {"medlemsid":12197,"fornavn":"Anh","etternavn":"Nguyen Pham","mobil":"97904835"},
@@ -45,17 +35,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       {"medlemsid":15678,"fornavn":"Alice","etternavn":"Dahl","mobil":"76894556"}
     ];
 
+    const results = await new Promise<any[]>((resolve, reject) => {
+      connection.query('SELECT b.medlemsid, b.fornavn, b.etternavn, b.mobil FROM vikarer a, medlemmer b WHERE a.medlemsid = b.medlemsid AND a.timeid= ? ORDER BY a.bekreftelsestidspunkt', [number], (error, results, fields) => {
+        if (error) {
+          console.log("test1");
+          resolve(dummy); // resolve with dummy data on error
+        } else {
+          console.log("test2");
+          console.log(results);
+          resolve(results);
+        }
+      });
+    });
+
     // Check the length of the results
     if (results.length === 4) {
+      console.log("test3");
       res.status(200).json(results);
     } else {
+      console.log("test4");
       res.status(200).json(dummy);
     }
     
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching data from the database' });
+    console.log("test5");
+    res.status(500).json(dummy); // Return dummy data when an unexpected error occurs
   }
 };
-
 
 export default handler;
