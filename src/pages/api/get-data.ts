@@ -5,7 +5,7 @@ import mysql from "mysql";
 const connection = mysql.createConnection({
   host: "ntnuitennis.no",
   user: "anh",
-  password: process.env.DATABASE_PASSWORD || "", // power + number
+  password: process.env.DATABASE_PASSWORD || "", // power + number 
   database: "tennisgr_web2",
 });
 
