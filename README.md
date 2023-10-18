@@ -43,6 +43,7 @@ Create file in root folder: .env.local
 with content:
 
 DATABASE_USERNAME=username
+
 DATABASE_PASSWORD=password
 
 To successfully show retrieved data,
