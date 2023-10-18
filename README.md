@@ -36,3 +36,17 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## Retrieve data from database
+
+Create file in root folder: .env.local
+with content:
+
+DATABASE_USERNAME=username
+DATABASE_PASSWORD=password
+
+To successfully show retrieved data,
+const numberToSend = 107;
+in index.tsx must be updated to
+a session number that has 4 vikarer ("substitutes").
+If not dummy data will be shown.

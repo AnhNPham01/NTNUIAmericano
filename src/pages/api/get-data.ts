@@ -2,9 +2,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import mysql from "mysql";
 
+// console.log("process.env.DATABASE_PASSWORD");
+// console.log(process.env.DATABASE_PASSWORD);
+
 const connection = mysql.createConnection({
   host: "ntnuitennis.no",
-  user: "anh",
+  user: process.env.DATABASE_USERNAME || "", // member of board
   password: process.env.DATABASE_PASSWORD || "", // power + number 
   database: "tennisgr_web2",
 });
@@ -41,6 +44,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       connection.query('SELECT b.medlemsid, b.fornavn, b.etternavn, b.mobil FROM vikarer a, medlemmer b WHERE a.medlemsid = b.medlemsid AND a.timeid= ? ORDER BY a.bekreftelsestidspunkt', [number], (error, results, fields) => {
         if (error) {
           console.log("test1");
+          console.log(error);
           resolve(dummy); // resolve with dummy data on error
         } else {
           console.log("test2");
